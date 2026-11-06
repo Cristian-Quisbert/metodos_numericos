@@ -1,0 +1,198 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desafío | Adopción responsable de mascotas</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#172338;--muted:#64748b;--line:#dce4ef;--blue:#2563eb;--teal:#0f9d83;--orange:#e58a25;--red:#d9485f;--soft:#eaf1ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(120deg,#142b4d,#245d86);color:white;padding:38px 20px}
+.hero{max-width:1180px;margin:auto}.eyebrow{text-transform:uppercase;letter-spacing:.13em;font-size:.76rem;font-weight:700;color:#b9d8f4}
+h1{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.12;margin:10px 0}.hero p{max-width:800px;color:#e0edf8;margin:10px 0}
+main{max-width:1180px;margin:26px auto;padding:0 18px 50px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 5px 18px #19365a0a;min-width:0}.span12{grid-column:span 12}.span8{grid-column:span 8}.span7{grid-column:span 7}.span6{grid-column:span 6}.span5{grid-column:span 5}.span4{grid-column:span 4}
+h2{font-size:1.18rem;margin:0 0 12px}h3{font-size:1rem;margin:15px 0 6px}p{margin:7px 0}.muted{color:var(--muted)}.tag{display:inline-block;background:var(--soft);color:#214d9a;padding:4px 9px;border-radius:99px;font-size:.78rem;font-weight:700}
+.equation{background:#f3f7fc;border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-family:Georgia,serif;font-size:1.12rem;overflow-wrap:anywhere}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;font-weight:650;font-size:.88rem;margin-bottom:5px}input{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;color:var(--ink);background:white}input:focus{outline:2px solid #9bbcff;border-color:var(--blue)}
+small{display:block;color:var(--muted);font-size:.78rem;margin-top:3px}
+button{border:0;border-radius:9px;padding:11px 16px;background:var(--blue);color:white;font:inherit;font-weight:700;cursor:pointer;margin-top:14px}button:hover{filter:brightness(.94)}button.secondary{background:#e8eef7;color:#20334d;margin-left:7px}
+.error{color:#b4233d;font-weight:650;min-height:1.4em;margin-top:8px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{background:#f7f9fc;border:1px solid var(--line);border-radius:11px;padding:12px}.metric strong{display:block;font-size:1.35rem;line-height:1.3}.metric span{font-size:.78rem;color:var(--muted)}
+.tablewrap{overflow:auto;max-height:470px;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;font-size:.84rem;white-space:nowrap}th,td{padding:8px 10px;border-bottom:1px solid #e8edf4;text-align:right}th{position:sticky;top:0;background:#edf3fa;z-index:1;color:#334155}th:first-child,td:first-child{text-align:center}
+canvas{width:100%;height:340px;display:block}.legend{display:flex;flex-wrap:wrap;gap:15px;font-size:.82rem;color:var(--muted)}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.callout{border-left:4px solid var(--teal);background:#effaf7;padding:12px 14px;border-radius:0 9px 9px 0}.warning{border-left-color:var(--orange);background:#fff8ed}
+footer{text-align:center;color:var(--muted);font-size:.82rem;padding:20px}
+@media(max-width:800px){.span8,.span7,.span6,.span5,.span4{grid-column:span 12}.metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.formgrid{grid-template-columns:1fr}.card{padding:15px}header{padding:30px 18px}}
+</style>
+</head>
+<body>
+<header><div class="hero">
+<div class="eyebrow">Métodos numéricos · Desafío individual · 6 de noviembre de 2026</div>
+<h1>Adopción responsable de mascotas</h1>
+<p>¿Cómo puede una campaña comunitaria ayudar a que los perros y gatos de un refugio encuentren un hogar, y qué tan bien aproximan Heun y Runge-Kutta de cuarto orden la evolución del proceso?</p>
+<p><span class="tag">EDO de primer orden · Valor inicial · Heun · RK4 · Solución exacta</span></p>
+</div></header>
+<main>
+<div class="grid">
+<section class="card span8">
+<h2>1. Problema y contexto</h2>
+<p>En muchos barrios, refugios y grupos voluntarios cuidan animales rescatados mientras buscan familias responsables que los adopten. Cuando la difusión de una campaña llega a más personas, aumenta la posibilidad de concretar adopciones; sin embargo, a medida que quedan menos animales disponibles, el número de nuevas adopciones tiende a disminuir.</p>
+<p><b>Comunidad beneficiaria:</b> refugios y redes de voluntariado de una comunidad urbana. <b>Problema:</b> planificar una campaña de adopción y estimar cómo podría reducirse la cantidad de animales pendientes de adopción.</p>
+<div class="callout"><b>Pregunta concreta:</b> ¿cuánto tiempo tomaría alcanzar una meta de adopción del 80 % de los animales disponibles al inicio, bajo una tasa promedio de adopción constante?</div>
+</section>
+<section class="card span4">
+<h2>2. Variables y unidades</h2>
+<p><b>t:</b> tiempo transcurrido, en semanas.</p>
+<p><b>A(t):</b> número acumulado de animales adoptados, en animales.</p>
+<p><b>N:</b> total de animales que se busca ubicar, en animales.</p>
+<p><b>k:</b> tasa de adopción efectiva, en semana⁻¹.</p>
+<p><b>A₀:</b> animales ya adoptados al inicio, en animales.</p>
+</section>
+<section class="card span12">
+<h2>3. Modelo matemático y solución analítica</h2>
+<p>Se supone que la velocidad de adopción es proporcional a la cantidad de animales que todavía falta ubicar. Por eso:</p>
+<div class="equation">dA/dt = k (N − A), &nbsp;&nbsp; A(0) = A₀</div>
+<h3>Solución exacta</h3>
+<p>Separando variables e integrando:</p>
+<div class="equation">A(t) = N − (N − A₀)e<sup>−kt</sup></div>
+<p><b>Comprobación:</b> A(0) = N − (N − A₀)e⁰ = A₀. Además, A'(t) = k(N − A₀)e<sup>−kt</sup> = k[N − A(t)], por lo que satisface la EDO.</p>
+<h3>Supuestos y alcance</h3>
+<ul>
+<li>El total objetivo N permanece constante durante la simulación; no se incorporan nuevos animales al refugio.</li>
+<li>La tasa k es constante y resume difusión, interés de las familias y capacidad de atención.</li>
+<li>Se considera que las adopciones son responsables y que cada animal se cuenta una sola vez.</li>
+<li>Los parámetros iniciales son hipotéticos para fines académicos; no representan una predicción validada de un refugio real.</li>
+</ul>
+</section>
+<section class="card span5">
+<h2>4. Configurar la simulación</h2>
+<p class="muted">Modifica los parámetros. Se ejecutarán Heun y RK4 con el mismo paso h y también con h/2 para comparar precisión.</p>
+<div class="formgrid">
+<div><label for="N">Total objetivo N (animales)</label><input id="N" type="number" min="1" max="100000" step="1" value="100"><small>Debe ser mayor que A₀.</small></div>
+<div><label for="A0">Adoptados al inicio A₀</label><input id="A0" type="number" min="0" step="1" value="10"></div>
+<div><label for="k">Tasa k (semana⁻¹)</label><input id="k" type="number" min="0.001" max="5" step="0.01" value="0.18"></div>
+<div><label for="h">Paso h (semanas)</label><input id="h" type="number" min="0.01" max="5" step="0.01" value="1"></div>
+<div><label for="T">Tiempo final T (semanas)</label><input id="T" type="number" min="0.1" max="200" step="0.5" value="16"></div>
+<div><label for="goal">Meta de adopción (%)</label><input id="goal" type="number" min="1" max="100" step="1" value="80"></div>
+</div>
+<button id="run">Ejecutar simulación</button><button class="secondary" id="reset">Restablecer</button>
+<div class="error" id="error" role="alert"></div>
+</section>
+<section class="card span7">
+<h2>5. Resultados principales</h2>
+<div class="metrics">
+<div class="metric"><strong id="exactEnd">—</strong><span>Solución exacta en T</span></div>
+<div class="metric"><strong id="heunEnd">—</strong><span>Heun en T</span></div>
+<div class="metric"><strong id="rkEnd">—</strong><span>RK4 en T</span></div>
+<div class="metric"><strong id="goalTime">—</strong><span>Tiempo exacto para la meta</span></div>
+</div>
+<h3>Interpretación automática</h3><div id="interpret" class="callout">Ejecuta la simulación para obtener la interpretación.</div>
+<p class="muted">Los valores se muestran en número de animales. El cálculo interno conserva decimales para poder comparar los métodos.</p>
+</section>
+<section class="card span12">
+<h2>6. Gráfica comparativa</h2>
+<div class="legend">
+<span><i class="dot" style="background:#172338"></i>Solución analítica</span>
+<span><i class="dot" style="background:#e58a25"></i>Heun</span>
+<span><i class="dot" style="background:#0f9d83"></i>RK4</span>
+</div>
+<canvas id="chart" aria-label="Gráfica de la solución analítica, Heun y RK4"></canvas>
+<p class="muted">La curva representa el número acumulado de adopciones a lo largo del tiempo.</p>
+</section>
+<section class="card span12">
+<h2>7. Tabla de iteraciones y errores (paso h)</h2>
+<p class="muted">Error absoluto = |aproximación − valor exacto|. Error relativo porcentual = error absoluto / |valor exacto| × 100. Si el valor exacto es cero, el error relativo no se calcula.</p>
+<div class="tablewrap"><table><thead><tr><th>i</th><th>t (sem)</th><th>Exacta</th><th>Heun</th><th>Error abs. Heun</th><th>Error % Heun</th><th>RK4</th><th>Error abs. RK4</th><th>Error % RK4</th></tr></thead><tbody id="rows"></tbody></table></div>
+</section>
+<section class="card span12">
+<h2>8. Comparación de dos tamaños de paso</h2>
+<p class="muted">Se compara el error absoluto al tiempo final T para h y h/2. La última fila de cada simulación se ajusta exactamente al tiempo final, aunque el último subintervalo sea menor que el paso nominal.</p>
+<div class="tablewrap"><table><thead><tr><th>Paso</th><th>Iteraciones</th><th>Error final Heun</th><th>Error final RK4</th></tr></thead><tbody id="stepRows"></tbody></table></div>
+<div class="callout" style="margin-top:12px"><b>Lectura numérica:</b> Heun es un método de orden 2 y RK4 es de orden 4. En general, al reducir h disminuye el error; para problemas suaves como este, RK4 suele alcanzar mayor precisión con el mismo tamaño de paso.</div>
+</section>
+<section class="card span6">
+<h2>9. ¿Cómo funcionan los métodos?</h2>
+<h3>Heun (RK2)</h3>
+<div class="equation">k₁ = f(tᵢ,yᵢ)<br>k₂ = f(tᵢ+h,yᵢ+hk₁)<br>yᵢ₊₁ = yᵢ + (h/2)(k₁+k₂)</div>
+<h3>Runge-Kutta clásico de cuarto orden (RK4)</h3>
+<div class="equation">k₁=f(tᵢ,yᵢ)<br>k₂=f(tᵢ+h/2,yᵢ+hk₁/2)<br>k₃=f(tᵢ+h/2,yᵢ+hk₂/2)<br>k₄=f(tᵢ+h,yᵢ+hk₃)<br>yᵢ₊₁=yᵢ+(h/6)(k₁+2k₂+2k₃+k₄)</div>
+<p class="muted">En este modelo f(t,A)=k(N−A). Ambos métodos parten de la misma condición inicial y usan los mismos parámetros.</p>
+</section>
+<section class="card span6">
+<h2>10. Conclusiones y limitaciones</h2>
+<p>El modelo permite representar una campaña en la que las adopciones avanzan rápidamente al principio y se hacen más lentas cuando quedan menos animales por ubicar. La solución exacta ofrece una referencia para medir la precisión de los métodos numéricos.</p>
+<p>La meta se alcanza en un tiempo finito según la fórmula exacta, siempre que esté por debajo del total N y por encima de A₀. RK4 normalmente presenta menor error que Heun en estas pruebas, aunque la tabla calculada debe utilizarse para verificarlo con los parámetros elegidos.</p>
+<p><b>Limitaciones:</b> una tasa constante simplifica un proceso social variable. En la realidad influyen campañas, temporadas, recursos del refugio, salud y edad de los animales, además de la disponibilidad de familias. Para mejorar el modelo se necesitarían registros reales y una tasa k estimada con datos históricos.</p>
+</section>
+<section class="card span12">
+<h2>11. Guion breve para el video (aprox. 1 minuto)</h2>
+<p>“Mi desafío se llama Adopción responsable de mascotas. Busca estudiar cómo una campaña comunitaria puede ayudar a que los animales de un refugio encuentren un hogar. Definí A como el número acumulado de adopciones y t como el tiempo en semanas. Supuse que la velocidad de adopción es proporcional a los animales que todavía faltan, por lo que el modelo es A prima igual a k por N menos A, con condición inicial A cero. La solución analítica es N menos N menos A cero multiplicado por e elevado a menos kt. En esta aplicación comparo esa solución con los métodos de Heun y Runge-Kutta de cuarto orden, usando el mismo paso y también un paso menor. La tabla y la gráfica muestran los errores. Finalmente, el modelo es útil para comprender una tendencia, pero sus parámetros son hipotéticos y deberían ajustarse con datos reales del refugio.”</p>
+</section>
+</div>
+</main>
+<footer>Proyecto académico demostrativo · Métodos Numéricos · EDO de primer orden</footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const f=(t,y,p)=>p.k*(p.N-y);
+function exact(t,p){return p.N-(p.N-p.A0)*Math.exp(-p.k*t)}
+function heunStep(t,y,h,p){const a=f(t,y,p),b=f(t+h,y+h*a,p);return y+h*(a+b)/2}
+function rk4Step(t,y,h,p){const a=f(t,y,p),b=f(t+h/2,y+h*a/2,p),c=f(t+h/2,y+h*b/2,p),d=f(t+h,y+h*c,p);return y+h*(a+2*b+2*c+d)/6}
+function solve(p,step){
+ const out=[{i:0,t:0,exact:exact(0,p),heun:p.A0,rk4:p.A0}];let t=0,yh=p.A0,yr=p.A0,i=0;
+ while(t<p.T-1e-10){const dt=Math.min(step,p.T-t);yh=heunStep(t,yh,dt,p);yr=rk4Step(t,yr,dt,p);t=Math.min(p.T,t+dt);i++;out.push({i,t,exact:exact(t,p),heun:yh,rk4:yr});if(i>20000)throw Error("Demasiadas iteraciones. Aumenta h o reduce T.");}
+ return out;
+}
+function fmt(x,d=4){return Number(x).toFixed(d)}
+function err(a,b){return Math.abs(a-b)}
+function rel(e,x){return Math.abs(x)>1e-12?fmt(100*e/Math.abs(x),4)+"%":"—"}
+function params(){return {N:Number($("N").value),A0:Number($("A0").value),k:Number($("k").value),h:Number($("h").value),T:Number($("T").value),goal:Number($("goal").value)}}
+function validate(p){
+ if(![p.N,p.A0,p.k,p.h,p.T,p.goal].every(Number.isFinite))return "Completa todos los campos con números válidos.";
+ if(p.N<=0||p.N>100000||!Number.isInteger(p.N))return "N debe ser un entero entre 1 y 100 000.";
+ if(p.A0<0||p.A0>=p.N||!Number.isInteger(p.A0))return "A₀ debe ser un entero mayor o igual a cero y menor que N.";
+ if(p.k<=0||p.k>5)return "k debe estar entre 0 y 5 semana⁻¹.";
+ if(p.h<=0||p.h>5)return "h debe ser mayor que 0 y como máximo 5 semanas.";
+ if(p.T<=0||p.T>200)return "T debe estar entre 0 y 200 semanas.";
+ if(p.goal<=0||p.goal>100)return "La meta debe ser mayor que 0 y como máximo 100 %.";
+ return "";
+}
+function draw(data,p){
+ const c=$("chart"),ctx=c.getContext("2d"),rect=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+ c.width=Math.max(320,rect.width)*dpr;c.height=340*dpr;ctx.scale(dpr,dpr);
+ const W=c.width/dpr,H=340,L=58,R=18,T=18,B=42,pw=W-L-R,ph=H-T-B;
+ const ymax=Math.max(p.N,...data.map(v=>Math.max(v.exact,v.heun,v.rk4)))*1.08;
+ const X=t=>L+(t/p.T)*pw,Y=y=>T+ph-(y/ymax)*ph;
+ ctx.clearRect(0,0,W,H);ctx.font="12px system-ui";ctx.strokeStyle="#e4eaf2";ctx.fillStyle="#64748b";ctx.lineWidth=1;
+ for(let j=0;j<=5;j++){let val=ymax*j/5,yy=Y(val);ctx.beginPath();ctx.moveTo(L,yy);ctx.lineTo(W-R,yy);ctx.stroke();ctx.textAlign="right";ctx.fillText(val.toFixed(0),L-8,yy+4)}
+ for(let j=0;j<=5;j++){let t=p.T*j/5,xx=X(t);ctx.beginPath();ctx.moveTo(xx,T);ctx.lineTo(xx,T+ph);ctx.stroke();ctx.textAlign="center";ctx.fillText(t.toFixed(1),xx,H-18)}
+ ctx.fillStyle="#475569";ctx.textAlign="center";ctx.fillText("Tiempo (semanas)",L+pw/2,H-2);
+ const series=[["exact","#172338"],["heun","#e58a25"],["rk4","#0f9d83"]];
+ series.forEach(([key,color])=>{ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=key==="exact"?3:2;data.forEach((v,i)=>{let x=X(v.t),y=Y(v[key]);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke()});
+}
+function render(){
+ const p=params(),msg=validate(p);$("error").textContent=msg;if(msg)return;
+ try{
+ const data=solve(p,p.h),half=solve(p,p.h/2),last=data[data.length-1],lastHalf=half[half.length-1],target=p.A0+(p.N-p.A0)*p.goal/100;
+ $("exactEnd").textContent=fmt(last.exact,2);$("heunEnd").textContent=fmt(last.heun,2);$("rkEnd").textContent=fmt(last.rk4,2);
+ const tgoal= -Math.log((p.N-target)/(p.N-p.A0))/p.k;
+ $("goalTime").textContent=p.goal===100?"∞":(Number.isFinite(tgoal)?fmt(tgoal,2)+" sem.":"—");
+ $("interpret").innerHTML=`Al cabo de <b>${fmt(p.T,2)} semanas</b>, la solución analítica estima <b>${fmt(last.exact,2)} adopciones</b> de ${p.N}. La meta del ${p.goal}% corresponde a ${fmt(target,2)} animales y se alcanzaría aproximadamente en <b>${p.goal===100?"un tiempo infinito":fmt(tgoal,2)+" semanas"}</b> según el modelo. En el paso h, el error final de Heun es ${fmt(err(last.heun,last.exact),6)} y el de RK4 es ${fmt(err(last.rk4,last.exact),6)}. ${err(last.rk4,last.exact)<=err(last.heun,last.exact)?"RK4 presenta el menor error en este ensayo.":"Heun presenta el menor error en este ensayo."}`;
+ $("rows").innerHTML=data.map(v=>{let eh=err(v.heun,v.exact),er=err(v.rk4,v.exact);return `<tr><td>${v.i}</td><td>${fmt(v.t,4)}</td><td>${fmt(v.exact,6)}</td><td>${fmt(v.heun,6)}</td><td>${fmt(eh,6)}</td><td>${rel(eh,v.exact)}</td><td>${fmt(v.rk4,6)}</td><td>${fmt(er,6)}</td><td>${rel(er,v.exact)}</td></tr>`}).join("");
+ $("stepRows").innerHTML=`<tr><td>h = ${fmt(p.h,4)}</td><td>${data.length-1}</td><td>${fmt(err(last.heun,last.exact),8)}</td><td>${fmt(err(last.rk4,last.exact),8)}</td></tr><tr><td>h/2 = ${fmt(p.h/2,4)}</td><td>${half.length-1}</td><td>${fmt(err(lastHalf.heun,lastHalf.exact),8)}</td><td>${fmt(err(lastHalf.rk4,lastHalf.exact),8)}</td></tr>`;
+ draw(data,p);
+ }catch(e){$("error").textContent=e.message}
+}
+$("run").addEventListener("click",render);
+$("reset").addEventListener("click",()=>{Object.entries({N:100,A0:10,k:.18,h:1,T:16,goal:80}).forEach(([id,v])=>$(id).value=v);render()});
+window.addEventListener("resize",()=>{if(!$("error").textContent)render()});
+render();
+</script>
+</body>
+</html>'''
+path = Path("/mnt/data/desafio_EDO_adopcion_mascotas.html")
+path.write_text(html, encoding="utf-8")
+print(f"Archivo creado: {path} ({path.stat().st_size:,} bytes)")
